@@ -8,7 +8,8 @@ description: "things ive built, broken, stuck back together."
         <a class="back" href="{{ '/' | relative_url }}">&larr; back</a>
         <h1>Work</h1>
         <p>things ive built, broken, stuck back together.</p>
-        <ul class="projects">
+        {% include project-search.html %}
+        <ul class="projects" id="project-list">
           {%- assign projects = site.projects | sort: "order" %}
           {%- for project in projects %}
           {% include project-card.html project=project %}
