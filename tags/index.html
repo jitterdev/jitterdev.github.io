@@ -1,0 +1,38 @@
+---
+layout: default
+title: tags - jitterdev
+description: "every tag on the site, and the work filed under it."
+---
+    <div class="container" id="about-view">
+      <div class="onload">
+        <a class="back" href="{{ '/' | relative_url }}">&larr; back</a>
+        <h1>Tags</h1>
+        <p>every tag, and the work filed under it.</p>
+        {%- assign all_tags = "" -%}
+        {%- for project in site.projects -%}
+          {%- for tag in project.tags -%}
+            {%- assign all_tags = all_tags | append: tag | append: "|" -%}
+          {%- endfor -%}
+        {%- endfor -%}
+        {%- assign tag_list = all_tags | split: "|" | uniq | sort -%}
+        {%- assign ordered = site.projects | sort: "order" -%}
+        {%- for tag in tag_list -%}
+          {%- assign count = 0 -%}
+          {%- for project in ordered -%}
+            {%- if project.tags contains tag -%}{%- assign count = count | plus: 1 -%}{%- endif -%}
+          {%- endfor -%}
+        <h2 id="{{ tag | slugify }}">{{ tag }} <span class="tag-count">{{ count }}</span></h2>
+        <ul class="sitemap">
+          {%- for project in ordered -%}
+            {%- if project.tags contains tag -%}
+          <li><a href="{{ project.url | relative_url }}">{{ project.title }}</a></li>
+            {%- endif -%}
+          {%- endfor -%}
+        </ul>
+        {%- endfor -%}
+        <hr />
+        <p class="end">
+          <i class="the-end"></i>
+        </p>
+      </div>
+    </div>

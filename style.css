@@ -952,6 +952,26 @@
       white-space: nowrap;
     }
 
+    a.project-tag:hover {
+      color: var(--tag-color, var(--secondary-color));
+      font-style: normal;
+    }
+
+    .tag-link {
+      color: inherit;
+    }
+
+    .tag-link:hover {
+      color: var(--primary-color);
+      font-style: normal;
+    }
+
+    .tag-count {
+      color: var(--subtext-color);
+      font-size: 0.8em;
+      font-weight: 400;
+    }
+
     .project-more summary {
       display: inline-block;
       cursor: pointer;

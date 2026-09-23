@@ -3,7 +3,7 @@ title: Magnolia
 years: "2025"
 dates: "May 2025 - August 2025"
 note: ""
-tags: [minecraft, java, fabric, archived]
+tags: [minecraft, java, fabric]
 summary: "Magnolia is a magic modpack for Fabric 1.21.1 focusing on world dynamics, interaction, and multiplayer."
 more: "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
 source: "https://github.com/jitterdev/magnolia"

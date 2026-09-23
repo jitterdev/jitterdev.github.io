@@ -31,7 +31,7 @@
             <p>{{ p.summary }}</p>
             <div class="project-tags">
               {%- for tag in p.tags %}
-              <span class="project-tag">{{ tag }}</span>
+              <a class="project-tag" href="{{ '/tags/' | relative_url }}#{{ tag | slugify }}">{{ tag }}</a>
               {%- endfor %}
             </div>
             {%- if p.more %}

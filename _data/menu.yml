@@ -36,3 +36,9 @@
   url: "/stats/"
   parent: "/"
   tip: "numbers about the site"
+
+- label: tags
+  url: "/tags/"
+  parent: "/"
+  tip: "projects by tag"
+  nav: false
