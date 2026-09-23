@@ -550,7 +550,7 @@
 
   document.addEventListener("pointerout", function (event) {
     var target = tipFor(event);
-    if (target === tipTarget && !target.contains(event.relatedTarget)) hideTip();
+    if (target && target === tipTarget && !target.contains(event.relatedTarget)) hideTip();
   });
 
   document.addEventListener("focusin", function (event) {

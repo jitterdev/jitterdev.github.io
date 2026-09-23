@@ -1477,8 +1477,8 @@
     }
 
     .the-end:hover::after {
-      content: "🦊";
-      color: var(--blue-color);
+      content: "yip!";
+      color: var(--primary-color);
     }
 
     @keyframes appear {

@@ -1,0 +1,17 @@
+        <div class="project-search-wrap">
+          <div class="project-search-field">
+            <input id="project-search" class="project-search" type="search"
+              placeholder="search, or tag:rust year:2024 -archived" autocomplete="off"
+              role="combobox" aria-expanded="false" aria-controls="project-suggest" />
+            <ul class="project-suggest" id="project-suggest" role="listbox" hidden></ul>
+          </div>
+          <select id="project-sort" class="project-sort" aria-label="Sort projects">
+            <option value="default">relevance</option>
+            <option value="name-asc">name a-z</option>
+            <option value="name-desc">name z-a</option>
+            <option value="newest">newest</option>
+            <option value="oldest">oldest</option>
+          </select>
+          <p class="project-search-hint" id="project-count"></p>
+        </div>
+        <p class="project-none" id="project-none" hidden>nothing matches that.</p>
