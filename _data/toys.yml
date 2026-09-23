@@ -1,0 +1,17 @@
+# One entry per toy on /toys/. Adding a toy is a data entry here plus its page.
+#
+# name    card title
+# url     where the toy lives
+# label   optional short name for the topbar breadcrumb (defaults to name)
+# parent  breadcrumb parent; leave as "/toys/" so it nests under toys
+# summary card body text
+# tags    freeform list; colors are assigned per unique tag by script.js
+# status  optional short label shown top-right of the card
+# source  optional repo/link
+
+- name: luau repl
+  url: "/toys/luau/"
+  label: luau
+  parent: "/toys/"
+  summary: "a luau interpreter compiled to webassembly."
+  tags: [luau, wasm, repl]

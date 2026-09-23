@@ -1,0 +1,38 @@
+# Topbar navigation + breadcrumb tree. Add an entry to add a link to the
+# standard menu. Set `nav: false` to keep it out of the topbar while still
+# listing it in the command palette and the breadcrumb dropdown.
+#
+# label  link text
+# url    where it points
+# parent breadcrumb parent; use "/" for a top-level page (omit for home)
+# tip    tooltip shown on hover
+# nav    set false to hide it from the topbar
+
+- label: about
+  url: "/"
+  tip: "who i am"
+
+- label: toys
+  url: "/toys/"
+  parent: "/"
+  tip: "little browser toys"
+
+- label: work
+  url: "/work/"
+  parent: "/"
+  tip: "projects ive worked on"
+
+- label: uses
+  url: "/uses/"
+  parent: "/"
+  tip: "hardware and software i use"
+
+- label: sitemap
+  url: "/sitemap/"
+  parent: "/"
+  tip: "every page on the site"
+
+- label: stats
+  url: "/stats/"
+  parent: "/"
+  tip: "numbers about the site"

@@ -1,0 +1,54 @@
+{%- assign p = include.project -%}
+{%- if p.title and p.title != "" -%}
+{%- assign has_years = false -%}
+{%- if p.years and p.years != "" -%}{%- assign has_years = true -%}{%- endif -%}
+{%- assign has_when = false -%}
+{%- if p.dates and p.dates != "" -%}{%- assign has_when = true -%}{%- endif -%}
+{%- if p.note and p.note != "" -%}{%- assign has_when = true -%}{%- endif -%}
+{%- assign has_source = false -%}
+{%- if p.source and p.source != "" -%}{%- assign has_source = true -%}{%- endif -%}
+{%- assign has_link = false -%}
+{%- if p.link and p.link != "" -%}{%- assign has_link = true -%}{%- endif -%}
+          <li class="project" data-name="{{ p.title }}" data-tags="{{ p.tags | join: ',' }}" data-years="{{ p.years }}">
+            <div class="project-head">
+              <a class="project-name" href="{{ p.url | relative_url }}">{{ p.title }}</a>
+              {%- if has_years or has_when %}
+              <span class="project-years"{% if has_when %} tabindex="0"{% endif %}>
+                {{ p.years }}
+                {%- if has_when %}
+                <span class="project-when">
+                  {%- if p.dates and p.dates != "" %}
+                  <span class="project-when-range">{{ p.dates }}</span>
+                  {%- endif %}
+                  {%- if p.note and p.note != "" %}
+                  <span class="project-when-note">{{ p.note }}</span>
+                  {%- endif %}
+                </span>
+                {%- endif %}
+              </span>
+              {%- endif %}
+            </div>
+            <p>{{ p.summary }}</p>
+            <div class="project-tags">
+              {%- for tag in p.tags %}
+              <span class="project-tag">{{ tag }}</span>
+              {%- endfor %}
+            </div>
+            {%- if p.more %}
+            <details class="project-more">
+              <summary>more</summary>
+              <p>{{ p.more }}</p>
+            </details>
+            {%- endif %}
+            {%- if has_source or has_link %}
+            <div class="project-meta">
+              {%- if has_source %}
+              <a class="project-link" href="{{ p.source }}">source</a>
+              {%- endif %}
+              {%- if has_link %}
+              <a class="project-link" href="{{ p.link }}">link</a>
+              {%- endif %}
+            </div>
+            {%- endif %}
+          </li>
+{%- endif -%}

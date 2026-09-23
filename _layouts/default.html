@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {%- assign head_title = page.title | default: site.title -%}
+    {%- unless head_title contains site.title -%}
+      {%- assign head_title = head_title | append: " - " | append: site.title -%}
+    {%- endunless -%}
+    {%- assign head_desc = page.description | default: page.summary | default: site.description -%}
+    {%- assign head_image = page.image | default: site.image -%}
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{{ head_title }}</title>
+    <meta name="description" content="{{ head_desc }}" />
+    <link rel="canonical" href="{{ page.url | absolute_url }}" />
+    <meta name="theme-color" content="#fab387" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="{{ site.title }}" />
+    <meta property="og:title" content="{{ head_title }}" />
+    <meta property="og:description" content="{{ head_desc }}" />
+    <meta property="og:url" content="{{ page.url | absolute_url }}" />
+    <meta property="og:image" content="{{ head_image | absolute_url }}" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="{{ site.title }}" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="{{ head_title }}" />
+    <meta name="twitter:description" content="{{ head_desc }}" />
+    <meta name="twitter:image" content="{{ head_image | absolute_url }}" />
+
+    <link rel="icon" type="image/png" href="{{ '/assets/fox.png' | relative_url }}" />
+    <link rel="apple-touch-icon" href="{{ '/logo.png' | relative_url }}" />
+    <link rel="stylesheet" href="{{ '/style.css' | relative_url }}" />
+  </head>
+
+  <body>
+    {%- assign site_pages = site.pages | concat: site.projects | sort: "url" -%}
+    {%- assign page_total = site_pages | size -%}
+    {%- assign page_number = 0 -%}
+    {%- for sp in site_pages -%}
+      {%- if sp.url == page.url -%}{%- assign page_number = forloop.index -%}{%- endif -%}
+    {%- endfor -%}
+    <div class="container">
+      <div class="navbar">
+        <div class="navleft terminal-prompt">
+          <a href="{{ '/' | relative_url }}">jitter</a>
+        </div>
+        <nav class="crumbs" aria-label="Breadcrumb">
+          {%- assign here = page.url -%}
+          {%- assign parts = here | split: "/" -%}
+          {%- assign nav_all = site.data.menu | concat: site.data.toys -%}
+          {%- assign work_kids = site.projects | sort: "order" -%}
+          <span class="crumb">
+            <a class="crumb-link" href="{{ '/' | relative_url }}">~</a>
+            {%- assign root_kids = nav_all | where: "parent", "/" -%}
+            {%- if root_kids.size > 0 -%}
+            <span class="crumb-menu">
+              {%- for kid in root_kids -%}
+              <a href="{{ kid.url | relative_url }}">{{ kid.label | default: kid.title | default: kid.name }}</a>
+              {%- endfor -%}
+            </span>
+            {%- endif -%}
+          </span>
+          {%- assign acc = "" -%}
+          {%- assign parent_dir = "/" -%}
+          {%- for part in parts -%}
+            {%- if part != "" -%}
+              {%- assign acc = acc | append: "/" | append: part -%}
+              {%- assign dir = acc | append: "/" -%}
+              {%- assign kids = nav_all | where: "parent", dir -%}
+              {%- if dir == "/work/" -%}{%- assign kids = work_kids -%}{%- endif -%}
+              {%- assign siblings = false -%}
+              {%- if kids.size == 0 -%}
+                {%- assign kids = nav_all | where: "parent", parent_dir -%}
+                {%- if parent_dir == "/work/" -%}{%- assign kids = work_kids -%}{%- endif -%}
+                {%- assign siblings = true -%}
+              {%- endif -%}
+              {%- assign visible = 0 -%}
+              {%- for kid in kids -%}
+                {%- if siblings -%}
+                  {%- unless kid.url == here -%}{%- assign visible = visible | plus: 1 -%}{%- endunless -%}
+                {%- else -%}
+                  {%- assign visible = visible | plus: 1 -%}
+                {%- endif -%}
+              {%- endfor -%}
+              <span class="crumb-sep">/</span>
+              <span class="crumb">
+                <a class="crumb-link" href="{{ dir | relative_url }}">{{ part }}</a>
+                {%- if visible > 0 -%}
+                <span class="crumb-menu">
+                  {%- for kid in kids -%}
+                  {%- unless siblings and kid.url == here -%}
+                  <a href="{{ kid.url | relative_url }}">{{ kid.label | default: kid.title | default: kid.name }}</a>
+                  {%- endunless -%}
+                  {%- endfor -%}
+                </span>
+                {%- endif -%}
+              </span>
+              {%- assign parent_dir = dir -%}
+            {%- endif -%}
+          {%- endfor -%}
+        </nav>
+        <nav class="navmenu" aria-label="Primary">
+          <button type="button" class="navmenu-btn" id="palette-open" aria-label="Open command palette" data-tip="command palette (press /)">find</button>
+          {%- for item in site.data.menu -%}
+            {%- if item.nav != false -%}
+            {%- assign is_current = false -%}
+            {%- if item.url == "/" -%}
+              {%- if page.url == "/" -%}{%- assign is_current = true -%}{%- endif -%}
+            {%- elsif page.url contains item.url -%}
+              {%- assign is_current = true -%}
+            {%- endif -%}
+          <a class="switch{% if is_current %} current{% endif %}" href="{{ item.url | relative_url }}"{% if item.tip %} data-tip="{{ item.tip }}"{% endif %}>{{ item.label }}</a>
+            {%- endif -%}
+          {%- endfor -%}
+        </nav>
+      </div>
+    </div>
+    {{ content }}
+    <div class="container">
+      {%- assign build_sha = site.data.build.sha -%}
+      <p class="page-index">
+        this page is {{ page_number }} of {{ page_total }}
+        &middot; built {{ site.time | date: "%Y-%m-%d" }}
+        {%- if build_sha %}&middot; <a href="https://github.com/jitterdev/jitterdev.github.io/commit/{{ build_sha }}">{{ build_sha | slice: 0, 7 }}</a>{% endif %}
+      </p>
+    </div>
+    <button type="button" class="to-top" id="to-top" aria-label="Back to top" hidden>&uarr;</button>
+    <script type="application/json" id="site-index">
+{
+  "menu": {{ site.data.menu | jsonify }},
+  "projects": [{% for p in site.projects %}{"title": {{ p.title | jsonify }}, "url": {{ p.url | relative_url | jsonify }}}{% unless forloop.last %},{% endunless %}{% endfor %}],
+  "toys": {{ site.data.toys | jsonify }}
+}
+    </script>
+    <script src="{{ '/script.js' | relative_url }}"></script>
+  </body>
+</html>

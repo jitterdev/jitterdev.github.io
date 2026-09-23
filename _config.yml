@@ -1,0 +1,25 @@
+title: jitterdev
+description: abandon all hope ye who enter here
+url: "https://jitterdev.github.io"
+image: "/assets/og.png"
+
+# Each file in _projects/ becomes a page at /work/<slug>/ plus a card in the
+# grid. See _projects/README.md for the fields.
+collections:
+  projects:
+    output: true
+    permalink: /work/:slug/
+
+defaults:
+  - scope:
+      path: ""
+      type: projects
+    values:
+      layout: project
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - vendor
+  - README.md
+  - tools

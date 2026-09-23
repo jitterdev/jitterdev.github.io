@@ -1,0 +1,29 @@
+---
+layout: default
+title: stats - jitterdev
+description: "numbers about this site, for no reason."
+---
+    <div class="container" id="about-view">
+      <div class="onload">
+        <a class="back" href="{{ '/' | relative_url }}">&larr; back</a>
+        <h1>Stats</h1>
+        <p>numbers about this site, for no reason.</p>
+        {%- assign badges = site.static_files | where_exp: "f", "f.path contains '/assets/badges/'" -%}
+        <table>
+          <tbody>
+            <tr><td>pages</td><td>{{ site.pages | size }}</td></tr>
+            <tr><td>projects</td><td>{{ site.projects | size }}</td></tr>
+            <tr><td>toys</td><td>{{ site.data.toys | size }}</td></tr>
+            <tr><td>badges</td><td>{{ badges | size }}</td></tr>
+            <tr><td>static files</td><td>{{ site.static_files | size }}</td></tr>
+            <tr><td>palette</td><td>Catppuccin Mocha</td></tr>
+            <tr><td>generator</td><td>Jekyll {{ jekyll.version }}</td></tr>
+            <tr><td>built</td><td>{{ site.time | date: "%Y-%m-%d %H:%M" }}</td></tr>
+          </tbody>
+        </table>
+        <hr />
+        <p class="end">
+          <i class="the-end"></i>
+        </p>
+      </div>
+    </div>

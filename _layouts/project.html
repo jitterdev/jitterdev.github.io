@@ -1,0 +1,22 @@
+---
+layout: default
+---
+    <div class="container">
+      <div class="onload project-full">
+        <a class="back" href="{{ '/work/' | relative_url }}">&larr; back to work</a>
+        <h1>{{ page.title }}</h1>
+        <p class="project-dates-line">{% if page.dates and page.dates != "" %}{{ page.dates }} &middot; {% endif %}{{ page.tags | join: ', ' }}</p>
+        <p>{{ page.summary }}</p>
+        {%- assign has_source = false -%}
+        {%- if page.source and page.source != "" -%}{%- assign has_source = true -%}{%- endif -%}
+        {%- assign has_link = false -%}
+        {%- if page.link and page.link != "" -%}{%- assign has_link = true -%}{%- endif -%}
+        {%- if has_source or has_link %}
+        <p class="project-links">
+          {%- if has_source %}<a href="{{ page.source }}">source</a>{% endif %}
+          {%- if has_link %}<a href="{{ page.link }}">link</a>{% endif %}
+        </p>
+        {%- endif %}
+        {{ content }}
+      </div>
+    </div>

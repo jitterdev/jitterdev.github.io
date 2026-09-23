@@ -1,0 +1,20 @@
+---
+layout: default
+title: 404 - jitterdev
+---
+    <div class="container">
+      <div class="onload notfound-page">
+        <div class="notfound">
+          <span class="nf">404</span>
+          <span class="nftext">page not found</span>
+        </div>
+        <p>that page doesnt exist. maybe it used to? how mysterious!</p>
+        <p>you tried to reach <code id="missing-path">?</code></p>
+        <p>
+          try the <a href="{{ '/' | relative_url }}">home page</a>,
+          the <a href="{{ '/work/' | relative_url }}">work</a>,
+          or the <a href="{{ '/sitemap/' | relative_url }}">sitemap</a>.
+        </p>
+        <p><button type="button" class="btn btn-ghost btn-small" id="random-project">take me somewhere random</button></p>
+      </div>
+    </div>

@@ -1,0 +1,22 @@
+---
+layout: default
+title: work - jitterdev
+description: "things ive built, broken, stuck back together."
+---
+    <div class="container">
+      <div class="onload">
+        <a class="back" href="{{ '/' | relative_url }}">&larr; back</a>
+        <h1>Work</h1>
+        <p>things ive built, broken, stuck back together.</p>
+        <ul class="projects">
+          {%- assign projects = site.projects | sort: "order" %}
+          {%- for project in projects %}
+          {% include project-card.html project=project %}
+          {%- endfor %}
+        </ul>
+        <hr />
+        <p class="end">
+          <i class="the-end"></i>
+        </p>
+      </div>
+    </div>

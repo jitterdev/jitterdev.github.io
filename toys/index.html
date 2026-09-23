@@ -1,0 +1,40 @@
+---
+layout: default
+title: toys - jitterdev
+description: "little browser things."
+---
+    <div class="container" id="about-view">
+      <div class="onload">
+        <h1>Toys</h1>
+        <p>little browser-side things i built for fun.</p>
+        <ul class="projects">
+          {%- for toy in site.data.toys %}
+          <li class="project">
+            <div class="project-head">
+              <a class="project-name" href="{{ toy.url | relative_url }}">{{ toy.name }}</a>
+              {%- if toy.status %}
+              <span class="project-years">{{ toy.status }}</span>
+              {%- endif %}
+            </div>
+            <p>{{ toy.summary }}</p>
+            {%- if toy.tags %}
+            <div class="project-tags">
+              {%- for tag in toy.tags %}
+              <span class="project-tag">{{ tag }}</span>
+              {%- endfor %}
+            </div>
+            {%- endif %}
+            {%- if toy.source %}
+            <div class="project-meta">
+              <a class="project-link" href="{{ toy.source }}">source</a>
+            </div>
+            {%- endif %}
+          </li>
+          {%- endfor %}
+        </ul>
+        <hr />
+        <p class="end">
+          <i class="the-end"></i>
+        </p>
+      </div>
+    </div>

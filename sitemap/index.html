@@ -1,0 +1,41 @@
+---
+layout: default
+title: sitemap - jitterdev
+description: "everything on the site, in one place."
+---
+    <div class="container" id="about-view">
+      <div class="onload">
+        <a class="back" href="{{ '/' | relative_url }}">&larr; back</a>
+        <h1>Sitemap</h1>
+        <p>everything on the site, in one place.</p>
+        <h2>pages</h2>
+        <ul class="sitemap">
+          {%- assign site_pages = site.pages | concat: site.projects | sort: "url" -%}
+          {%- for sp in site_pages -%}
+            {%- assign depth = 0 -%}
+            {%- assign segs = sp.url | split: "/" -%}
+            {%- for seg in segs -%}{%- if seg != "" -%}{%- assign depth = depth | plus: 1 -%}{%- endif -%}{%- endfor -%}
+            {%- assign indent = depth | minus: 1 -%}
+            {%- if indent < 0 -%}{%- assign indent = 0 -%}{%- endif -%}
+          <li style="margin-left: {{ indent | times: 1.5 }}em"><a href="{{ sp.url | relative_url }}">{% if sp.url == "/" %}~/{% else %}{{ sp.url }}{% endif %}</a></li>
+          {%- endfor -%}
+        </ul>
+        <h2>work</h2>
+        <ul class="sitemap">
+          {%- assign projects = site.projects | sort: "order" %}
+          {%- for project in projects %}
+          <li><a href="{{ project.url | relative_url }}">{{ project.title }}</a></li>
+          {%- endfor %}
+        </ul>
+        <h2>toys</h2>
+        <ul class="sitemap">
+          {%- for toy in site.data.toys -%}
+          <li><a href="{{ toy.url | relative_url }}">{{ toy.name }}</a></li>
+          {%- endfor -%}
+        </ul>
+        <hr />
+        <p class="end">
+          <i class="the-end"></i>
+        </p>
+      </div>
+    </div>

@@ -1,0 +1,197 @@
+---
+layout: default
+title: luau repl - jitterdev
+description: "a luau interpreter compiled to webassembly, running entirely in browser."
+---
+    <div class="container" id="about-view">
+      <div class="onload">
+        <a class="back" href="{{ '/toys/' | relative_url }}">&larr; back to toys</a>
+        <h1>Luau REPL</h1>
+        <p>a luau interpreter compiled to webassembly, running in your browser.</p>
+        <div class="repl">
+          <textarea id="repl-input" class="repl-input" spellcheck="false" autocapitalize="off" autocomplete="off">print("hello from luau")
+print(2 + 2)
+
+local t = {1, 2, 3}
+print(#t)
+
+-- globals stick around between runs:
+x = (x or 0) + 1
+print("run number", x)</textarea>
+          <div class="repl-bar">
+            <button id="repl-run" class="btn btn-primary btn-small" disabled>run</button>
+            <button id="repl-clear" class="btn btn-ghost btn-small">clear</button>
+            <span id="repl-status" class="repl-status">loading luau...</span>
+            <span class="repl-hint">ctrl/cmd + enter</span>
+          </div>
+          <pre id="repl-output" class="repl-output"></pre>
+        </div>
+        <p class="repl-credit">runtime: <a href="https://github.com/xNasuni/luau-web">luau-web</a> &middot; language: <a href="https://luau.org/">luau</a> (mit)</p>
+        <hr />
+        <p class="end">
+          <i class="the-end"></i>
+        </p>
+      </div>
+    </div>
+    <style>
+      .repl {
+        display: flex;
+        flex-direction: column;
+        gap: var(--global-space);
+        margin: calc(var(--global-space) * 2) 0;
+      }
+
+      .repl-input {
+        width: 100%;
+        min-height: 13em;
+        resize: vertical;
+        padding: var(--global-space);
+        border: 1px solid var(--table-color);
+        border-radius: 5px;
+        background-color: var(--code-bg-color);
+        color: var(--font-color);
+        font-family: var(--mono-font-stack);
+        font-size: 0.95em;
+        line-height: 1.5;
+        -webkit-appearance: none;
+      }
+
+      .repl-input:focus {
+        outline: 0;
+        border-color: var(--primary-color);
+      }
+
+      .repl-bar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--global-space);
+      }
+
+      .repl-status {
+        color: var(--subtext-color);
+        font-size: 0.85em;
+      }
+
+      .repl-hint {
+        margin-left: auto;
+        color: var(--blockquote-color);
+        font-size: 0.8em;
+      }
+
+      .repl-output {
+        margin: 0;
+        min-height: 6em;
+        max-height: 24em;
+        overflow: auto;
+        padding: var(--global-space);
+        border: 1px solid var(--table-color);
+        border-radius: 5px;
+        background-color: var(--code-bg-color);
+        box-shadow: none;
+        color: var(--font-color);
+        font-family: var(--mono-font-stack);
+        font-size: 0.9em;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      .repl-line-err {
+        color: var(--error-color);
+      }
+
+      .repl-line-dim {
+        color: var(--blockquote-color);
+      }
+
+      .repl-credit {
+        color: var(--blockquote-color);
+        font-size: 0.85em;
+      }
+    </style>
+    <script type="module">
+      const input = document.getElementById("repl-input");
+      const output = document.getElementById("repl-output");
+      const statusEl = document.getElementById("repl-status");
+      const runBtn = document.getElementById("repl-run");
+      const clearBtn = document.getElementById("repl-clear");
+
+      const WORKER_URL = "{{ '/toys/luau/repl-worker.js' | relative_url }}";
+      const TIMEOUT = 5000;
+
+      let worker = null;
+      let timer = null;
+      let pending = false;
+
+      function line(text, cls) {
+        const span = document.createElement("span");
+        span.className = "repl-line" + (cls ? " " + cls : "");
+        span.textContent = text + "\n";
+        output.appendChild(span);
+        output.scrollTop = output.scrollHeight;
+      }
+
+      function settle() {
+        clearTimeout(timer);
+        pending = false;
+        runBtn.disabled = false;
+        statusEl.textContent = "ready";
+      }
+
+      function spawn() {
+        worker = new Worker(WORKER_URL, { type: "module" });
+        worker.onmessage = function (event) {
+          const msg = event.data || {};
+          if (msg.type === "ready") {
+            settle();
+          } else if (msg.type === "result") {
+            settle();
+            if (msg.output) line(msg.output, "repl-line-out");
+            if (msg.error) line(msg.error, "repl-line-err");
+            if (!msg.output && !msg.error) line("(no output)", "repl-line-dim");
+          } else if (msg.type === "error") {
+            settle();
+            line(msg.error, "repl-line-err");
+          }
+        };
+        worker.onerror = function (event) {
+          settle();
+          line("worker failed: " + (event.message || "unknown error"), "repl-line-err");
+        };
+        statusEl.textContent = "loading luau...";
+        runBtn.disabled = true;
+      }
+
+      function run() {
+        if (pending || runBtn.disabled) return;
+        if (!input.value.trim()) return;
+        pending = true;
+        runBtn.disabled = true;
+        statusEl.textContent = "running...";
+        worker.postMessage({ type: "run", code: input.value });
+        timer = setTimeout(function () {
+          worker.terminate();
+          settle();
+          line("stopped after 5s (infinite loop?) - state was reset", "repl-line-err");
+          spawn();
+        }, TIMEOUT);
+      }
+
+      runBtn.addEventListener("click", run);
+      clearBtn.addEventListener("click", function () {
+        output.textContent = "";
+        input.focus();
+      });
+
+      input.addEventListener("keydown", function (event) {
+        if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
+          event.preventDefault();
+          run();
+        } else if (event.key === "Tab") {
+          event.preventDefault();
+          input.setRangeText("  ", input.selectionStart, input.selectionEnd, "end");
+        }
+      });
+
+      spawn();
+    </script>
