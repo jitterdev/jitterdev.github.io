@@ -7,42 +7,57 @@ description: "the hardware and software i actually use day to day."
       <div class="onload">
         <a class="back" href="{{ '/' | relative_url }}">&larr; back</a>
         <h1>Uses</h1>
-        <p>
-          the hardware and software i actually use day to day.
-          <br>for now, a great wall of placeholder text.
-        </p>
+        <p>the hardware and software i actually use day to day.</p>
 
+        <!--
+          each entry is <li><strong>label</strong> &mdash; value</li>.
+          optional extras inside the same <li>:
+            <span class="use-note">a dimmer line under the entry</span>
+            <ul class="use-points"><li>nested subpoints</li></ul>
+        -->
         <h2>machine</h2>
-        <ul>
-          <li><strong>cpu</strong> &mdash; TODO</li>
-          <li><strong>gpu</strong> &mdash; TODO</li>
-          <li><strong>ram</strong> &mdash; TODO</li>
+        <ul class="uses">
+          <li><strong>cpu</strong> &mdash; Intel Core i5-12600k</li>
+          <li><strong>gpu</strong> &mdash; MSI GeForce RTX 3060 GAMING X 12G</li>
+          <li>
+            <strong>ram</strong> &mdash; CORSAIR Vengeance LPX 64GB (2x32GB) DDR4 2666Mhz CL16
+            <span class="use-note">overclocked to 3200Mhz</span>
+          </li>
           <li><strong>storage</strong> &mdash; TODO</li>
-          <li><strong>display</strong> &mdash; TODO</li>
+          <li><strong>display</strong> &mdash; Westinghouse 32" WQHD 2560x1440 144Hz</li>
         </ul>
 
         <h2>peripherals</h2>
-        <ul>
-          <li><strong>keyboard</strong> &mdash; TODO</li>
-          <li><strong>mouse</strong> &mdash; TODO</li>
+        <ul class="uses">
+          <li>
+            <strong>keyboard</strong> &mdash; Keychron K4 Version 2
+            <ul class="use-points">
+              <li>Gateron G Pro Red switches</li>
+              <li>osume bloom keycaps</li>
+            </ul>
+          </li>
+          <li><strong>mouse</strong> &mdash; Razer Viper V3 HyperSpeed</li>
           <li><strong>headphones</strong> &mdash; TODO</li>
-          <li><strong>mic</strong> &mdash; TODO</li>
+          <li><strong>mic</strong> &mdash; Blue Snowball iCE</li>
         </ul>
 
         <h2>software</h2>
-        <ul>
-          <li><strong>os</strong> &mdash; TODO</li>
-          <li><strong>wm / desktop</strong> &mdash; TODO</li>
-          <li><strong>terminal</strong> &mdash; TODO</li>
-          <li><strong>shell</strong> &mdash; TODO</li>
-          <li><strong>editor</strong> &mdash; TODO</li>
-          <li><strong>browser</strong> &mdash; TODO</li>
-          <li><strong>music</strong> &mdash; TODO</li>
+        <ul class="uses">
+          <li>
+            <strong>os</strong> &mdash; Bedrock Linux
+            <span class="use-note">main strata Arch Linux or CachyOS</span>
+          </li>
+          <li><strong>wm / desktop</strong> &mdash; KDE Plasma</li>
+          <li><strong>terminal</strong> &mdash; kitty</li>
+          <li><strong>shell</strong> &mdash; fish</li>
+          <li><strong>editor</strong> &mdash; VSCodium</li>
+          <li><strong>browser</strong> &mdash; Zen Browser</li>
+          <li><strong>music</strong> &mdash; Spotify</li>
         </ul>
 
         <h2>misc</h2>
-        <ul>
-          <li><strong>notes app</strong> &mdash; TODO</li>
+        <ul class="uses">
+          <li><strong>notes app</strong> &mdash; Obsidian</li>
           <li><strong>password manager</strong> &mdash; TODO</li>
           <li><strong>self-hosted</strong> &mdash; TODO</li>
         </ul>

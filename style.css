@@ -1422,6 +1422,33 @@
       margin: 0;
     }
 
+    .uses,
+    .use-points {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .uses>li {
+      margin-bottom: var(--global-space);
+    }
+
+    .use-note {
+      display: block;
+      color: var(--subtext-color);
+      font-size: 0.9em;
+    }
+
+    .use-points>li {
+      padding-left: calc(var(--global-space) * 2);
+      color: var(--subtext-color);
+      font-size: 0.9em;
+    }
+
+    .use-points>li::after {
+      content: ">";
+    }
+
     .page-index {
       margin: var(--global-space) 0 calc(var(--global-space) * 2);
       text-align: center;
