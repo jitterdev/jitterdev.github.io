@@ -30,7 +30,7 @@
     <meta name="twitter:image" content="{{ head_image | absolute_url }}" />
 
     <link rel="icon" type="image/png" href="{{ '/assets/fox.png' | relative_url }}" />
-    <link rel="apple-touch-icon" href="{{ '/logo.png' | relative_url }}" />
+    <link rel="apple-touch-icon" href="{{ '/assets/fox.png' | relative_url }}" />
     <link rel="stylesheet" href="{{ '/style.css' | relative_url }}" />
   </head>
 
@@ -123,7 +123,7 @@
       <p class="page-index">
         this page is {{ page_number }} of {{ page_total }}
         &middot; built {{ site.time | date: "%Y-%m-%d" }}
-        {%- if build_sha %}&middot; <a href="https://github.com/jitterdev/jitterdev.github.io/commit/{{ build_sha }}">{{ build_sha | slice: 0, 7 }}</a>{% endif %}
+        {%- if build_sha %} &middot; <a href="https://github.com/jitterdev/jitterdev.github.io/commit/{{ build_sha }}">{{ build_sha | slice: 0, 7 }}</a>{% endif %}
       </p>
     </div>
     <button type="button" class="to-top" id="to-top" aria-label="Back to top" hidden>&uarr;</button>
