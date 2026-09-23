@@ -1,13 +1,14 @@
 ---
-title: zone nadir
-years: "2026-present"
-dates: "Feb 2026 – ?"
-note: "Main Developer, scripting"
-tags: [roblox, luau, game, active]
-summary: "Zone Nadir is a persistent world roleplay game with myth-like aspects."
+title: Magnolia
+years: "2025"
+dates: "May 2025 - August 2025"
+note: ""
+tags: [minecraft, java, fabric, archived]
+summary: "Magnolia is a magic modpack for Fabric 1.21.1 focusing on world dynamics, interaction, and multiplayer."
 more: "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
-link: "https://www.roblox.com/games/116439795953639/ZONE-NADIR"
-order: 1
+source: "https://github.com/jitterdev/magnolia"
+link: "https://modrinth.com/modpack/magnolia"
+order: 7
 ---
 Duis aute irure dolor in **reprehenderit** in voluptate velit esse *cillum dolore* eu fugiat nulla pariatur. A [link](https://example.com) works too.
 
