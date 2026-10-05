@@ -15,7 +15,7 @@
 - label: toys
   url: "/toys/"
   parent: "/"
-  tip: "little browser toys"
+  tip: "little things"
 
 - label: work
   url: "/work/"

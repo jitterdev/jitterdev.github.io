@@ -1,0 +1,456 @@
+---
+layout: default
+title: mesh2fbx - jitterdev
+description: "converts roblox filemesh files to fbx."
+---
+    <div class="container" id="about-view">
+      <div class="onload">
+        <a class="back" href="{{ '/toys/' | relative_url }}">&larr; back to toys</a>
+        <h1>mesh2fbx</h1>
+        <p>
+          drop a roblox <b>.mesh</b> file and get an <b>.fbx</b> back.
+        </p>
+
+        <div class="drop" id="drop">
+          <input type="file" id="file" accept=".mesh,.bin" hidden />
+          <p class="drop-main" id="drop-main">drop a filemesh here</p>
+          <p class="drop-sub">or <button type="button" class="linkish" id="pick">choose a file</button></p>
+        </div>
+
+        <div class="stage" id="stage" hidden>
+          <div class="stage-head">
+            <span class="stage-name" id="name">mesh</span>
+            <span class="stage-ver" id="version"></span>
+          </div>
+          <div class="stage-canvas">
+            <canvas id="view"></canvas>
+            <p class="stage-empty" id="viewer-empty">no faces in this range</p>
+          </div>
+          <p class="stage-hint">drag to orbit &middot; shift or right drag to pan &middot; scroll to zoom</p>
+
+          <div class="controls">
+            <div class="ctl">
+              <label for="lod">level of detail</label>
+              <select id="lod"></select>
+            </div>
+            <div class="ctl">
+              <label class="check"><input type="checkbox" id="wire" /> wireframe</label>
+              <label class="check"><input type="checkbox" id="flipv" /> flip v</label>
+              <label class="check"><input type="checkbox" id="usetex" checked /> use texture</label>
+            </div>
+            <div class="ctl">
+              <button type="button" class="btn btn-default btn-small" id="reset">reset view</button>
+              <button type="button" class="btn btn-default btn-small" id="tex">load texture</button>
+              <input type="file" id="texfile" accept="image/*" hidden />
+              <button type="button" class="btn btn-primary btn-small" id="get">download fbx</button>
+            </div>
+          </div>
+
+          <div class="stats" id="stats"></div>
+          <div class="notes" id="notes"></div>
+        </div>
+
+        <p class="err" id="err" hidden></p>
+
+        <p class="credit">
+          spec: the unofficial
+          <a href="https://devforum.roblox.com/t/roblox-filemesh-format-specification/326114">roblox filemesh specification</a>
+          &middot; outputs binary fbx 7.4, aligned to blender's exporter
+        </p>
+        <hr />
+        <p class="end">
+          <i class="the-end"></i>
+        </p>
+      </div>
+    </div>
+
+    <style>
+      .drop {
+        border: 1px dashed var(--table-color);
+        border-radius: 5px;
+        padding: calc(var(--global-space) * 2);
+        text-align: center;
+        margin: calc(var(--global-space) * 2) 0;
+        transition: border-color 0.15s ease, background-color 0.15s ease;
+      }
+      .drop.over {
+        border-color: var(--primary-color);
+        background-color: var(--code-bg-color);
+      }
+      .drop-main {
+        font-family: var(--mono-font-stack);
+        color: var(--subtext-color);
+        margin: 0 0 var(--global-space) 0;
+      }
+      .drop-sub {
+        margin: 0;
+        color: var(--subtext-color);
+      }
+      .linkish {
+        background: none;
+        border: 0;
+        padding: 0;
+        font: inherit;
+        color: var(--primary-color);
+        cursor: pointer;
+        text-decoration: underline;
+      }
+      .stage {
+        margin: calc(var(--global-space) * 2) 0;
+      }
+      .stage-head {
+        display: flex;
+        align-items: baseline;
+        gap: var(--global-space);
+        margin-bottom: var(--global-space);
+      }
+      .stage-name {
+        font-weight: bold;
+        word-break: break-all;
+      }
+      .stage-ver {
+        color: var(--primary-color);
+        font-size: 0.9em;
+      }
+      .stage-canvas {
+        position: relative;
+        border: 1px solid var(--table-color);
+        border-radius: 5px;
+        overflow: hidden;
+      }
+      #view {
+        display: block;
+        width: 100%;
+        height: 60vh;
+        min-height: 20em;
+        max-height: 32em;
+        touch-action: none;
+        cursor: grab;
+      }
+      #view:active {
+        cursor: grabbing;
+      }
+      .stage-empty {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0;
+        color: var(--subtext-color);
+        pointer-events: none;
+      }
+      /* display:flex above outranks the ua hidden rule, so restate it here or
+         the overlay never goes away */
+      .stage-empty[hidden] {
+        display: none;
+      }
+      .stage-hint {
+        color: var(--subtext-color);
+        font-size: 0.85em;
+        margin: var(--global-space) 0 0 0;
+      }
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: calc(var(--global-space) * 2);
+        align-items: center;
+        margin: calc(var(--global-space) * 1.5) 0;
+      }
+      .ctl {
+        display: flex;
+        gap: var(--global-space);
+        align-items: center;
+      }
+      .ctl label {
+        color: var(--subtext-color);
+        font-size: 0.9em;
+      }
+      .check {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        cursor: pointer;
+      }
+      select {
+        font: inherit;
+        font-size: 0.9em;
+        padding: 3px 6px;
+        background-color: var(--code-bg-color);
+        color: var(--font-color);
+        border: 1px solid var(--table-color);
+        border-radius: 5px;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: max-content 1fr;
+        gap: 2px var(--global-space);
+        font-size: 0.9em;
+        margin-bottom: var(--global-space);
+      }
+      .stats dt {
+        color: var(--subtext-color);
+      }
+      .stats dd {
+        margin: 0;
+        font-family: var(--mono-font-stack);
+        word-break: break-word;
+      }
+      .notes {
+        font-size: 0.9em;
+      }
+      .notes ul {
+        margin: 0;
+        padding-left: 1.4em;
+      }
+      .notes li {
+        color: var(--subtext-color);
+        margin-bottom: 2px;
+      }
+      .notes li.bad {
+        color: var(--error-color);
+      }
+      .err {
+        color: var(--error-color);
+        white-space: pre-wrap;
+        font-size: 0.9em;
+      }
+      .credit {
+        color: var(--subtext-color);
+        font-size: 0.85em;
+      }
+    </style>
+
+    <script type="module">
+      import { parseFileMesh, meshToFBX, describeMesh, lodRanges, MeshParseError } from {{ '/toys/mesh2fbx/filemesh.js' | relative_url | jsonify }};
+      import { createViewer } from {{ '/toys/mesh2fbx/viewer.js' | relative_url | jsonify }};
+
+      const el = (id) => document.getElementById(id);
+      const drop = el('drop');
+      const stage = el('stage');
+      const errBox = el('err');
+      const stats = el('stats');
+      const notes = el('notes');
+      const lodSel = el('lod');
+
+      let mesh = null;
+      let ranges = null;
+      let viewer = createViewer(el('view'));
+
+      function fail(message) {
+        errBox.hidden = false;
+        errBox.textContent = message;
+        stage.hidden = true;
+      }
+
+      function clearError() {
+        errBox.hidden = true;
+        errBox.textContent = '';
+      }
+
+      function row(term, value) {
+        return `<dt>${term}</dt><dd>${value}</dd>`;
+      }
+
+      function renderStats() {
+        const info = describeMesh(mesh);
+        const parts = [];
+        parts.push(row('file', el('name').textContent));
+        parts.push(row('filemesh version', mesh.version));
+        if (mesh.vertexSize) {
+          parts.push(row('vertex record', `${mesh.vertexSize} bytes${mesh.hasColor ? ' (with rgba)' : ''}`));
+        }
+        parts.push(row('vertices', info.nv.toLocaleString()));
+        parts.push(row('triangles', info.nf.toLocaleString()));
+        parts.push(
+          row(
+            'bounds',
+            `x ${info.min[0].toFixed(3)} .. ${info.max[0].toFixed(3)}<br>` +
+              `y ${info.min[1].toFixed(3)} .. ${info.max[1].toFixed(3)}<br>` +
+              `z ${info.min[2].toFixed(3)} .. ${info.max[2].toFixed(3)}`
+          )
+        );
+        parts.push(row('largest axis', info.size.map((n) => n.toFixed(3)).join(' × ')));
+        parts.push(row('uvs', mesh.uvs.length / 2 > 0 ? 'present' : 'none'));
+        parts.push(row('vertex colours', mesh.colors ? 'yes' : 'no'));
+        parts.push(row('tangents', mesh.tangents ? 'yes' : 'no (pre-PBR mesh)'));
+        if (ranges) {
+          parts.push(row('lod ranges', ranges.map((r) => `${r.label}: ${r.count} tris`).join(', ')));
+        }
+        if (info.degenerate) parts.push(row('degenerate faces', info.degenerate));
+        if (info.outOfRange) {
+          parts.push(row('index problem', `highest face index ${info.maxIndex} but only ${info.nv} vertices`));
+        }
+        if (mesh.bones.length) {
+          parts.push(row('bones', mesh.bones.length.toLocaleString()));
+          parts.push(row('subsets', mesh.subsets.length.toLocaleString()));
+          const names = mesh.boneNames.slice(0, 6).join(', ');
+          parts.push(row('bone names', names + (mesh.boneNames.length > 6 ? `, +${mesh.boneNames.length - 6} more` : '')));
+          if (mesh.skinning) {
+            let bound = 0;
+            for (let i = 0; i < mesh.skinning.weights.length; i++) {
+              if (mesh.skinning.weights[i] > 0) bound++;
+            }
+            parts.push(row('skinned vertices', `${bound.toLocaleString()} of ${info.nv.toLocaleString()}`));
+          }
+        }
+        if (mesh.lodType != null) parts.push(row('lod generator', ['none', 'unknown', 'rbx simplifier', 'zeux mesh optimizer'][mesh.lodType] || mesh.lodType));
+        stats.innerHTML = parts.join('');
+      }
+
+      function renderNotes() {
+        const items = [];
+        for (const w of mesh.warnings || []) items.push(`<li>${escapeHtml(w)}</li>`);
+        if (mesh.bones.length) {
+          items.push(
+            '<li>skinning, bones and subsets are read and reported above, but the fbx is written as the bind pose. bake or rig it in blender.</li>'
+          );
+        }
+        notes.innerHTML = items.length ? `<ul>${items.join('')}</ul>` : '';
+      }
+
+      function escapeHtml(s) {
+        return String(s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+      }
+
+      function faceSubset() {
+        if (!ranges || lodSel.value === 'all') return mesh.faces;
+        const r = ranges[Number(lodSel.value)];
+        return mesh.faces.subarray(r.begin * 3, r.end * 3);
+      }
+
+      function refresh() {
+        const result = viewer.setFaces(faceSubset());
+        el('viewer-empty').hidden = result.drawn + result.culled > 0;
+      }
+
+      async function load(arrayBuffer, filename) {
+        clearError();
+        try {
+          // v7 meshes are Draco-compressed, so parsing has to await the wasm
+          // decoder on first use.
+          mesh = await parseFileMesh(arrayBuffer);
+        } catch (e) {
+          if (e instanceof MeshParseError) {
+            fail(`${filename}: ${e.message}`);
+          } else {
+            fail(`${filename}: unexpected failure\n${e && e.stack ? e.stack : e}`);
+          }
+          return;
+        }
+
+        el('name').textContent = filename;
+        el('version').textContent = `filemesh v${mesh.version}`;
+        stage.hidden = false;
+
+        ranges = lodRanges(mesh);
+        lodSel.innerHTML = '';
+        if (ranges) {
+          ranges.forEach((r, i) => {
+            const opt = document.createElement('option');
+            opt.value = String(i);
+            opt.textContent = `${r.label} - ${r.count.toLocaleString()} tris`;
+            lodSel.append(opt);
+          });
+          const all = document.createElement('option');
+          all.value = 'all';
+          all.textContent = `everything - ${(mesh.faces.length / 3).toLocaleString()} tris`;
+          lodSel.append(all);
+        } else {
+          lodSel.innerHTML = '<option>single mesh, no lods</option>';
+        }
+
+        renderStats();
+        renderNotes();
+
+        const result = viewer.setMesh(mesh, faceSubset());
+        el('viewer-empty').hidden = result.drawn + result.culled > 0;
+
+        if (mesh.faces.length / 3 > 400000) {
+          notes.innerHTML =
+            '<ul><li class="bad">this is a very large mesh (' +
+            (mesh.faces.length / 3).toLocaleString() +
+            ' triangles). the preview will crawl, but the fbx export is fine.</li></ul>' +
+            notes.innerHTML;
+        }
+      }
+
+      async function handleFile(file) {
+        if (!file) return;
+        await load(await file.arrayBuffer(), file.name);
+      }
+
+      el('pick').addEventListener('click', () => el('file').click());
+      drop.addEventListener('click', (e) => {
+        if (e.target === el('pick') || e.target.closest('button')) return;
+        el('file').click();
+      });
+      el('file').addEventListener('change', (e) => handleFile(e.target.files[0]));
+
+      for (const type of ['dragenter', 'dragover']) {
+        drop.addEventListener(type, (e) => {
+          e.preventDefault();
+          drop.classList.add('over');
+        });
+      }
+      for (const type of ['dragleave', 'drop']) {
+        drop.addEventListener(type, (e) => {
+          e.preventDefault();
+          if (type === 'dragleave' && drop.contains(e.relatedTarget)) return;
+          drop.classList.remove('over');
+        });
+      }
+      drop.addEventListener('drop', (e) => handleFile(e.dataTransfer.files[0]));
+
+      // textures: separate drop target so it never fights the mesh dropzone
+      const canvas = el('view');
+      for (const type of ['dragover', 'drop']) {
+        canvas.addEventListener(type, (e) => e.preventDefault());
+      }
+      canvas.addEventListener('drop', async (e) => {
+        const file = e.dataTransfer.files[0];
+        if (!file || !file.type.startsWith('image/')) return;
+        const bmp = await createImageBitmap(file);
+        const off = new OffscreenCanvas(bmp.width, bmp.height);
+        const c2 = off.getContext('2d');
+        c2.drawImage(bmp, 0, 0);
+        viewer.setTexture(c2.getImageData(0, 0, bmp.width, bmp.height));
+        bmp.close();
+      });
+      el('tex').addEventListener('click', () => el('texfile').click());
+      el('texfile').addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const bmp = await createImageBitmap(file);
+        const off = new OffscreenCanvas(bmp.width, bmp.height);
+        const c2 = off.getContext('2d');
+        c2.drawImage(bmp, 0, 0);
+        viewer.setTexture(c2.getImageData(0, 0, bmp.width, bmp.height));
+        bmp.close();
+      });
+
+      el('wire').addEventListener('change', (e) => viewer.setWireframe(e.target.checked));
+      el('usetex').addEventListener('change', (e) => viewer.setTextured(e.target.checked));
+      el('flipv').addEventListener('change', (e) => {
+        viewer.setFlipV(e.target.checked);
+        refresh();
+      });
+      el('reset').addEventListener('click', () => viewer.resetView());
+      lodSel.addEventListener('change', refresh);
+
+      el('get').addEventListener('click', () => {
+        if (!mesh) return;
+        const lod = lodSel.value === 'all' || !ranges ? null : Number(lodSel.value);
+        const bytes = meshToFBX(mesh, {
+          name: el('name').textContent.replace(/\.[^.]+$/, '') || 'mesh',
+          lod,
+          flipV: el('flipv').checked,
+        });
+        const blob = new Blob([bytes], { type: 'application/octet-stream' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `${el('name').textContent.replace(/\.[^.]+$/, '') || 'mesh'}.fbx`;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+      });
+    </script>
