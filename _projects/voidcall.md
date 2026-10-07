@@ -7,7 +7,7 @@ tags: [roblox, luau, game]
 summary: "Voidcall, formerly Elusive Last, is a hardcore closed-community roleplay game built off of decompiled versions of old Deepwoken."
 more: "Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam."
 link: "https://www.roblox.com/communities/35144551/Voidcall"
-order: 4
+order: 8
 ---
 Nisi ut aliquid ex ea commodi consequatur, quis autem vel eum iure reprehenderit.
 
