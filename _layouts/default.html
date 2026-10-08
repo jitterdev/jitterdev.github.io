@@ -6,7 +6,6 @@
       {%- assign head_title = head_title | append: " - " | append: site.title -%}
     {%- endunless -%}
     {%- assign head_desc = page.description | default: page.summary | default: site.description -%}
-    {%- assign head_image = page.image | default: site.image -%}
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>{{ head_title }}</title>
@@ -19,15 +18,10 @@
     <meta property="og:title" content="{{ head_title }}" />
     <meta property="og:description" content="{{ head_desc }}" />
     <meta property="og:url" content="{{ page.url | absolute_url }}" />
-    <meta property="og:image" content="{{ head_image | absolute_url }}" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="{{ site.title }}" />
 
-    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="{{ head_title }}" />
     <meta name="twitter:description" content="{{ head_desc }}" />
-    <meta name="twitter:image" content="{{ head_image | absolute_url }}" />
 
     <link rel="icon" type="image/png" href="{{ '/assets/fox.png' | relative_url }}" />
     <link rel="apple-touch-icon" href="{{ '/assets/fox.png' | relative_url }}" />
