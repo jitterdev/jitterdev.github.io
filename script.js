@@ -94,6 +94,7 @@
         var sep = document.createElement("span");
         sep.className = "sep";
         sep.setAttribute("aria-hidden", "true");
+        sep.textContent = "/";
         foxPetsEl.append(" ", sep, " " + foxTotal.toLocaleString() + " total");
       }
     };
