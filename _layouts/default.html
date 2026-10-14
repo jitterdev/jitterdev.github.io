@@ -25,7 +25,7 @@
 
     <link rel="icon" type="image/png" href="{{ '/assets/fox.png' | relative_url }}" />
     <link rel="apple-touch-icon" href="{{ '/assets/fox.png' | relative_url }}" />
-    <link rel="stylesheet" href="{{ '/style.css' | relative_url }}" />
+    <link rel="stylesheet" href="{{ '/style.css' | relative_url }}?v={{ site.time | date: '%s' }}" />
   </head>
 
   <body>
@@ -128,6 +128,6 @@
   "toys": {{ site.data.toys | jsonify }}
 }
     </script>
-    <script src="{{ '/script.js' | relative_url }}"></script>
+    <script src="{{ '/script.js' | relative_url }}?v={{ site.time | date: '%s' }}"></script>
   </body>
 </html>
