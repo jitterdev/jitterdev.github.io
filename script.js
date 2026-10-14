@@ -89,9 +89,13 @@
     var renderFoxPets = function () {
       if (!foxPetsEl) return;
       var mine = foxPets === 1 ? "1 pet" : foxPets + " pets";
-      foxPetsEl.textContent = foxTotal === null
-        ? mine
-        : mine + " \u00b7 " + foxTotal.toLocaleString() + " total";
+      foxPetsEl.textContent = mine;
+      if (foxTotal !== null) {
+        var sep = document.createElement("span");
+        sep.className = "sep";
+        sep.setAttribute("aria-hidden", "true");
+        foxPetsEl.append(" ", sep, " " + foxTotal.toLocaleString() + " total");
+      }
     };
     renderFoxPets();
 

@@ -116,8 +116,8 @@
       {%- assign build_sha = site.data.build.sha -%}
       <p class="page-index">
         this page is {{ page_number }} of {{ page_total }}
-        &middot; built {{ site.time | date: "%Y-%m-%d" }}
-        {%- if build_sha %} &middot; <a href="https://github.com/jitterdev/jitterdev.github.io/commit/{{ build_sha }}">{{ build_sha | slice: 0, 7 }}</a>{% endif %}
+        <span class="sep" aria-hidden="true"></span> built {{ site.time | date: "%Y-%m-%d" }}
+        {%- if build_sha %} <span class="sep" aria-hidden="true"></span> <a href="https://github.com/jitterdev/jitterdev.github.io/commit/{{ build_sha }}">{{ build_sha | slice: 0, 7 }}</a>{% endif %}
       </p>
     </div>
     <button type="button" class="to-top" id="to-top" aria-label="Back to top" hidden>&uarr;</button>

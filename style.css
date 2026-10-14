@@ -1212,6 +1212,16 @@
       user-select: none;
     }
 
+    .sep {
+      display: inline-block;
+      width: 0.3em;
+      height: 0.3em;
+      margin: 0 0.35em;
+      background: currentColor;
+      transform: rotate(45deg);
+      vertical-align: middle;
+    }
+
     @media screen and (max-width: 600px) {
       .intro {
         flex-direction: column;
