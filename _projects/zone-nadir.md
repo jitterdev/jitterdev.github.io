@@ -5,7 +5,6 @@ dates: "Feb 2026 – ?"
 note: "Main Developer, scripting"
 tags: [roblox, luau, game, active]
 summary: "Zone Nadir is a persistent world roleplay game with myth-like aspects."
-more: "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
 link: "https://www.roblox.com/games/116439795953639/ZONE-NADIR"
 order: 1
 ---

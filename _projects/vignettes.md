@@ -4,12 +4,10 @@ years: ""
 dates: ""
 note: ""
 tags: [roblox]
-summary: "At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque."
-more: "Et harum quidem rerum facilis est et expedita distinctio."
+summary: "A showcase collection of my vignettes."
+more: "A \"vignette\" is a small, self-contained, high-detail scene, diorama, or showcase build, comparable to a \"render\"."
 source: ""
 link: ""
-order: 4
+order: 5
 ---
-Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat.
-
-Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates.
+TODO
