@@ -22,3 +22,10 @@
   parent: "/toys/"
   summary: "converts roblox filemesh files to fbx."
   tags: [roblox, fbx, 3d, offline]
+
+- name: rbxdl
+  url: "/toys/rbxdl/"
+  label: rbxdl
+  parent: "/toys/"
+  summary: "pulls a public roblox asset by id. backed by a worker because roblox blocks cors."
+  tags: [roblox, assets, worker, online]

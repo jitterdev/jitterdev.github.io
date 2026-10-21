@@ -1,0 +1,322 @@
+---
+layout: default
+title: rbxdl - jitterdev
+description: "pull a roblox asset by id: models, audio, images, animations."
+---
+    <div class="container" id="about-view">
+      <div class="onload">
+        <a class="back" href="{{ '/toys/' | relative_url }}">&larr; back to toys</a>
+        <h1>rbxdl</h1>
+        <p>
+          paste a roblox asset id and get the file back.
+        </p>
+
+        <form class="rbxdl-form" id="form">
+          <label class="rbxdl-label" for="asset-id">asset id</label>
+          <div class="rbxdl-row">
+            <input
+              id="asset-id"
+              name="asset-id"
+              type="text"
+              inputmode="numeric"
+              pattern="[0-9]*"
+              placeholder="142376088"
+              autocomplete="off"
+              spellcheck="false"
+            />
+            <button class="btn btn-primary btn-small" id="go" type="submit">fetch asset</button>
+          </div>
+        </form>
+
+        <p class="rbxdl-status" id="status" role="status" aria-live="polite">waiting for an id.</p>
+        <p class="err" id="err" role="alert" hidden></p>
+
+        <p class="rbxdl-setup" id="setup" hidden>
+          this toy needs its proxy deployed first. run <code>npx wrangler deploy</code> in
+          <a href="https://github.com/jitterdev/jitterdev.github.io/tree/master/tools/rbxdl-worker">tools/rbxdl-worker</a>,
+          then set <code>rbxdl_endpoint</code> in <code>_config.yml</code>.
+        </p>
+
+        <div class="stage" id="result" hidden>
+          <div class="stage-head">
+            <span class="stage-name" id="r-name"></span>
+            <span class="stage-ver" id="r-type"></span>
+          </div>
+          <dl class="stats">
+            <dt>creator</dt>
+            <dd id="r-creator"></dd>
+            <dt>asset id</dt>
+            <dd id="r-id"></dd>
+          </dl>
+          <button class="btn btn-primary btn-small" id="save" type="button">save file</button>
+        </div>
+
+        <p class="credit">
+          proxy: <a href="https://github.com/jitterdev/jitterdev.github.io/tree/master/tools/rbxdl-worker">cloudflare worker</a>
+        </p>
+        <hr />
+        <p class="end">
+          <i class="the-end"></i>
+        </p>
+      </div>
+    </div>
+
+    <style>
+      .rbxdl-form {
+        margin: calc(var(--global-space) * 2) 0 var(--global-space) 0;
+      }
+      .rbxdl-label {
+        display: block;
+        margin-bottom: var(--global-space);
+        color: var(--subtext-color);
+        font-size: 0.9em;
+      }
+      .rbxdl-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--global-space);
+      }
+      .rbxdl-row input {
+        flex: 1 1 14em;
+        min-width: 0;
+        font-family: var(--mono-font-stack);
+      }
+      .rbxdl-row .btn {
+        flex: 0 0 auto;
+        min-height: 44px;
+      }
+      .rbxdl-form input:focus-visible,
+      .rbxdl-form .btn:focus-visible,
+      .stage .btn:focus-visible {
+        outline: 2px solid var(--primary-color);
+        outline-offset: 2px;
+      }
+      .rbxdl-status {
+        color: var(--subtext-color);
+        font-size: 0.9em;
+        margin-bottom: var(--global-space);
+      }
+      .rbxdl-status.busy {
+        color: var(--primary-color);
+      }
+      .rbxdl-setup {
+        color: var(--subtext-color);
+        font-size: 0.9em;
+        margin-bottom: var(--global-space);
+      }
+      .rbxdl-setup code {
+        color: var(--font-color);
+      }
+      .stage {
+        margin: calc(var(--global-space) * 2) 0;
+      }
+      .stage[hidden] {
+        display: none;
+      }
+      .stage-head {
+        display: flex;
+        align-items: baseline;
+        flex-wrap: wrap;
+        gap: var(--global-space);
+        margin-bottom: var(--global-space);
+      }
+      .stage-name {
+        font-weight: bold;
+        word-break: break-word;
+      }
+      .stage-ver {
+        color: var(--primary-color);
+        font-size: 0.9em;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: max-content 1fr;
+        gap: 2px var(--global-space);
+        font-size: 0.9em;
+        margin-bottom: calc(var(--global-space) * 1.5);
+      }
+      .stats dt {
+        color: var(--subtext-color);
+      }
+      .stats dd {
+        margin: 0;
+        font-family: var(--mono-font-stack);
+        word-break: break-word;
+      }
+      .err {
+        color: var(--error-color);
+        white-space: pre-wrap;
+        font-size: 0.9em;
+        margin-bottom: var(--global-space);
+      }
+      .err[hidden] {
+        display: none;
+      }
+      .credit {
+        color: var(--subtext-color);
+        font-size: 0.85em;
+      }
+      .credit code {
+        color: var(--font-color);
+      }
+      @media screen and (max-width: 520px) {
+        .rbxdl-row .btn {
+          width: 100%;
+        }
+      }
+    </style>
+
+    <script type="module">
+      const ENDPOINT = {{ site.rbxdl_endpoint | jsonify }};
+      const API = (ENDPOINT || "").replace(/\/+$/, "");
+
+      const form = document.getElementById("form");
+      const input = document.getElementById("asset-id");
+      const go = document.getElementById("go");
+      const statusEl = document.getElementById("status");
+      const errEl = document.getElementById("err");
+      const setup = document.getElementById("setup");
+      const result = document.getElementById("result");
+      const saveBtn = document.getElementById("save");
+
+      let current = null;
+      let busy = false;
+
+      function setStatus(text, isBusy) {
+        statusEl.textContent = text;
+        statusEl.classList.toggle("busy", Boolean(isBusy));
+      }
+
+      function clearError() {
+        errEl.hidden = true;
+        errEl.textContent = "";
+      }
+
+      function showError(message) {
+        errEl.textContent = message;
+        errEl.hidden = false;
+      }
+
+      function formatBytes(bytes) {
+        if (!bytes) return "0 b";
+        const units = ["b", "kb", "mb", "gb"];
+        const power = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
+        const value = bytes / Math.pow(1024, power);
+        const digits = power === 0 || value >= 100 ? 0 : 1;
+        return value.toFixed(digits) + " " + units[power];
+      }
+
+      function filenameFrom(response, fallback) {
+        const header = response.headers.get("content-disposition") || "";
+        const encoded = header.match(/filename\*=UTF-8''([^;]+)/i);
+        if (encoded) {
+          try {
+            return decodeURIComponent(encoded[1].trim());
+          } catch (error) {
+            /* fall through to the plain filename below */
+          }
+        }
+        const plain = header.match(/filename="?([^";]+)"?/i);
+        return plain ? plain[1].trim() : fallback;
+      }
+
+      function fileUrl(id, name) {
+        return API + "/api/file/" + id + "?name=" + encodeURIComponent(name);
+      }
+
+      function render(meta) {
+        current = meta;
+        document.getElementById("r-name").textContent = meta.name;
+        document.getElementById("r-type").textContent = meta.type;
+        document.getElementById("r-creator").textContent = meta.creator || "unknown";
+        document.getElementById("r-id").textContent = meta.id;
+        result.hidden = false;
+        saveBtn.disabled = Boolean(meta.blocked);
+        setStatus(meta.blocked ? meta.reason : "ready to save.");
+      }
+
+      async function resolve(id) {
+        busy = true;
+        go.disabled = true;
+        clearError();
+        result.hidden = true;
+        setStatus("asking roblox about " + id + "...", true);
+
+        try {
+          const response = await fetch(API + "/api/meta/" + id);
+          const data = await response.json().catch(() => null);
+          if (!response.ok) {
+            throw new Error(data?.error || "the proxy returned " + response.status + ".");
+          }
+          render(data);
+        } catch (error) {
+          current = null;
+          setStatus("nothing fetched.");
+          showError(error.message || "could not reach the proxy.");
+        } finally {
+          busy = false;
+          go.disabled = false;
+        }
+      }
+
+      async function save() {
+        if (!current || busy) return;
+        busy = true;
+        clearError();
+        saveBtn.disabled = true;
+        saveBtn.textContent = "saving...";
+        setStatus("pulling bytes from roblox...", true);
+
+        try {
+          const response = await fetch(fileUrl(current.id, current.name));
+          if (!response.ok) {
+            const data = await response.json().catch(() => null);
+            throw new Error(data?.error || "the proxy returned " + response.status + ".");
+          }
+
+          const blob = await response.blob();
+          const name = filenameFrom(response, current.name + "." + current.extension);
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = name;
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+          setTimeout(() => URL.revokeObjectURL(url), 1000);
+          setStatus("saved " + name + " (" + formatBytes(blob.size) + ").");
+        } catch (error) {
+          setStatus("nothing saved.");
+          showError(error.message || "the download failed.");
+        } finally {
+          busy = false;
+          saveBtn.disabled = false;
+          saveBtn.textContent = "save file";
+        }
+      }
+
+      form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        if (busy) return;
+
+        const id = input.value.trim();
+        if (!/^\d{1,20}$/.test(id)) {
+          result.hidden = true;
+          current = null;
+          setStatus("waiting for an id.");
+          showError("that is not an asset id. it should be all digits.");
+          input.focus();
+          return;
+        }
+        resolve(id);
+      });
+
+      saveBtn.addEventListener("click", save);
+
+      if (!API) {
+        setup.hidden = false;
+        input.disabled = true;
+        go.disabled = true;
+        setStatus("proxy not configured.");
+      }
+    </script>

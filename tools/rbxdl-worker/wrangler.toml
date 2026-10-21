@@ -1,0 +1,9 @@
+name = "rbxdl"
+main = "worker.mjs"
+compatibility_date = "2026-10-01"
+
+# Optional: lock the proxy to your own origins.
+# Leave unset and it answers any origin, which is fine for a public read-only toy.
+#
+# [vars]
+# ALLOWED_ORIGINS = "https://jitterdev.github.io,http://localhost:4000"

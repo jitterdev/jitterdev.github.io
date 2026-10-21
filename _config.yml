@@ -2,6 +2,10 @@ title: jitterdev
 description: abandon all hope ye who enter here
 url: "https://jitterdev.github.io"
 
+# Cloudflare Worker that proxies Roblox asset delivery for /toys/rbxdl/.
+# Deploy tools/rbxdl-worker, then paste the workers.dev URL here.
+rbxdl_endpoint: "https://rbxdl.jittter.workers.dev"
+
 # Each file in _projects/ becomes a page at /work/<slug>/ plus a card in the
 # grid. See _projects/README.md for the fields.
 collections:
