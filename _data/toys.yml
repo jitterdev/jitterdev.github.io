@@ -14,11 +14,11 @@
   label: luau
   parent: "/toys/"
   summary: "a luau interpreter compiled to webassembly."
-  tags: [luau, wasm, repl]
+  tags: [luau, wasm, repl, offline]
 
 - name: mesh2fbx
   url: "/toys/mesh2fbx/"
   label: mesh2fbx
   parent: "/toys/"
   summary: "converts roblox filemesh files to fbx."
-  tags: [roblox, fbx, 3d]
+  tags: [roblox, fbx, 3d, offline]
