@@ -27,5 +27,5 @@
   url: "/toys/rbxdl/"
   label: rbxdl
   parent: "/toys/"
-  summary: "pulls a public roblox asset by id. backed by a worker because roblox blocks cors."
+  summary: "pulls a public roblox asset by id."
   tags: [roblox, assets, worker, online]

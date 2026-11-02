@@ -1,8 +1,8 @@
 # rbxdl worker
 
-Cloudflare Worker behind `/toys/rbxdl/`. It exists for one reason: Roblox's
-`assetdelivery` endpoint sends no `Access-Control-Allow-Origin`, so a browser
-cannot read the file. The worker fetches server-side and adds CORS.
+Cloudflare Worker behind `/toys/rbxdl/`. Roblox's `assetdelivery`
+endpoint is `Access-Control-Allow-Origin`, so a browser
+cannot read the file. The worker fetches and adds CORS.
 
 ## deploy
 
@@ -11,14 +11,14 @@ cd tools/rbxdl-worker
 npx wrangler deploy
 ```
 
-`wrangler` prints the URL, something like `https://rbxdl.<subdomain>.workers.dev`.
+`wrangler` prints the URL (something like `https://rbxdl.<subdomain>.workers.dev`).
 Put that in `_config.yml`:
 
 ```yaml
 rbxdl_endpoint: "https://rbxdl.<subdomain>.workers.dev"
 ```
 
-That is the only wiring. The toy reads the value at build time.
+That's it.
 
 ## routes
 
@@ -29,9 +29,9 @@ That is the only wiring. The toy reads the value at build time.
 
 ## limits
 
-- public assets only. private, moderated, and place assets are refused.
-- 32 MB cap. Anything bigger gets a 413.
-- audio is served as Roblox stores it (ogg). There is no ffmpeg here.
+- private, moderated, and place assets are refused.
+- 32 MB cap or you get a 413.
+- audio is served as ogg (how Roblox stores it). There is no ffmpeg here.
 - no caching of file bytes. Metadata is cached for 10 minutes.
 
 ## locking it down
@@ -43,4 +43,4 @@ and only speaks to Roblox. To restrict it, set a var:
 npx wrangler deploy --var ALLOWED_ORIGINS:https://jitterdev.github.io
 ```
 
-Cloudflare's rate limiting rules also apply if the toy ever gets popular.
+Cloudflare's rate limiting rules also apply.
