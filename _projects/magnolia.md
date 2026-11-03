@@ -1,5 +1,5 @@
 ---
-title: Magnolia
+title: magnolia
 years: "2025"
 dates: "May 2025 - August 2025"
 note: ""
