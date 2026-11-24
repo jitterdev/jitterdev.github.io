@@ -26,7 +26,10 @@ description: "converts roblox filemesh files to fbx."
             <canvas id="view"></canvas>
             <p class="stage-empty" id="viewer-empty">no faces in this range</p>
           </div>
-          <p class="stage-hint">drag to orbit <span class="sep" aria-hidden="true">/</span> shift or right drag to pan <span class="sep" aria-hidden="true">/</span> scroll to zoom</p>
+          <details class="stage-help">
+            <summary>controls</summary>
+            <p>drag to orbit, shift or right drag to pan, scroll to zoom.</p>
+          </details>
 
           <div class="controls">
             <div class="ctl">
@@ -144,9 +147,17 @@ description: "converts roblox filemesh files to fbx."
       .stage-empty[hidden] {
         display: none;
       }
-      .stage-hint {
+      .stage-help {
+        margin: var(--global-space) 0 0 0;
         color: var(--subtext-color);
         font-size: 0.85em;
+      }
+      .stage-help summary {
+        display: inline-block;
+        cursor: pointer;
+        color: var(--primary-color);
+      }
+      .stage-help p {
         margin: var(--global-space) 0 0 0;
       }
       .controls {

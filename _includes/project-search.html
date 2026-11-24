@@ -1,8 +1,9 @@
         <div class="project-search-wrap">
           <div class="project-search-field">
             <input id="project-search" class="project-search" type="search"
-              placeholder="search, or tag:rust year:2024 -archived" autocomplete="off"
-              role="combobox" aria-expanded="false" aria-controls="project-suggest" />
+              placeholder="search projects" data-tip="search words, or filter with tag:rust, year:2024, -archived"
+              aria-description="search words, or filter with tag:rust, year:2024, -archived"
+              autocomplete="off" role="combobox" aria-expanded="false" aria-controls="project-suggest" />
             <ul class="project-suggest" id="project-suggest" role="listbox" hidden></ul>
           </div>
           <select id="project-sort" class="project-sort" aria-label="Sort projects">

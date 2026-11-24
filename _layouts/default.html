@@ -115,12 +115,19 @@
     <div class="container">
       {%- assign build_sha = site.data.build.sha -%}
       <p class="page-index">
-        this page is {{ page_number }} of {{ page_total }}
-        <span class="sep" aria-hidden="true">/</span> built {{ site.time | date: "%Y-%m-%d" }}
-        {%- if build_sha %} <span class="sep" aria-hidden="true">/</span> <a href="https://github.com/jitterdev/jitterdev.github.io/commit/{{ build_sha }}">{{ build_sha | slice: 0, 7 }}</a>{% endif %}
+        this page is {{ page_number }} of {{ page_total }}, built {{ site.time | date: "%Y-%m-%d" }}
+        {%- if build_sha %}, <a href="https://github.com/jitterdev/jitterdev.github.io/commit/{{ build_sha }}">{{ build_sha | slice: 0, 7 }}</a>{% endif %}
       </p>
     </div>
     <button type="button" class="to-top" id="to-top" aria-label="Back to top" hidden>&uarr;</button>
+    <dialog class="shot-viewer" id="shot-viewer" aria-label="full size image">
+      <figure class="shot-viewer-figure">
+        <button type="button" class="shot-close" id="shot-close" aria-label="close full size image">&times;</button>
+        <img id="shot-full" alt="" decoding="async" />
+        <p class="shot-status" id="shot-status" role="status" hidden>loading full size...</p>
+      </figure>
+      <p class="shot-subtitle" id="shot-subtitle" hidden></p>
+    </dialog>
     <script type="application/json" id="site-index">
 {
   "menu": {{ site.data.menu | jsonify }},

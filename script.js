@@ -91,11 +91,7 @@
       var mine = foxPets === 1 ? "1 pet" : foxPets + " pets";
       foxPetsEl.textContent = mine;
       if (foxTotal !== null) {
-        var sep = document.createElement("span");
-        sep.className = "sep";
-        sep.setAttribute("aria-hidden", "true");
-        sep.textContent = "/";
-        foxPetsEl.append(" ", sep, " " + foxTotal.toLocaleString() + " total");
+        foxPetsEl.append(", " + foxTotal.toLocaleString() + " total");
       }
     };
     renderFoxPets();
@@ -1180,6 +1176,8 @@
 
   document.addEventListener("keydown", function (event) {
     if (!palette.hidden) return;
+    // A modal image view owns the keyboard while it is open.
+    if (document.querySelector("dialog[open]")) return;
     if (event.key !== "/" || event.ctrlKey || event.metaKey || event.altKey) return;
     var tag = (event.target.tagName || "").toLowerCase();
     if (tag === "input" || tag === "textarea" || event.target.isContentEditable) return;
@@ -1343,12 +1341,96 @@
   });
 
   document.addEventListener("focusout", hideTip);
+  document.addEventListener("input", hideTip);
 
   window.addEventListener("scroll", function () {
     if (tipTarget) placeTip(tipTarget);
   }, true);
 
   window.addEventListener("resize", hideTip);
+
+  // Click-to-enlarge images. The thumbnail is the small file; the dialog
+  // pulls the full resolution one only when someone opens it.
+  var shotViewer = document.getElementById("shot-viewer");
+  var shotImage = document.getElementById("shot-full");
+  var shotClose = document.getElementById("shot-close");
+  var shotSubtitle = document.getElementById("shot-subtitle");
+  var shotStatus = document.getElementById("shot-status");
+
+  function closeShot() {
+    if (shotViewer && shotViewer.open) shotViewer.close();
+  }
+
+  function openShot(trigger) {
+    var src = trigger.getAttribute("data-shot-src");
+    if (!src) return;
+
+    if (!shotViewer || typeof shotViewer.showModal !== "function") {
+      window.open(src, "_blank", "noopener");
+      return;
+    }
+
+    var thumb = trigger.querySelector("img");
+    var subtitle = trigger.getAttribute("data-shot-subtitle") || "";
+
+    shotImage.alt = thumb ? thumb.alt : "";
+    shotSubtitle.textContent = subtitle;
+    shotSubtitle.hidden = !subtitle;
+    shotStatus.textContent = "loading full size...";
+    shotStatus.hidden = false;
+    shotImage.src = src;
+    hideTip();
+    shotViewer.showModal();
+    document.documentElement.classList.add("shot-locked");
+    shotClose.focus();
+  }
+
+  if (shotViewer && shotImage) {
+    // `load` fires before the bitmap is ready to paint. Waiting on decode keeps
+    // the loading line up until there is actually something to look at.
+    function shotReady() {
+      shotStatus.hidden = true;
+    }
+
+    shotImage.addEventListener("load", function () {
+      if (!shotViewer.open) return;
+      if (typeof shotImage.decode === "function") {
+        shotImage.decode().then(shotReady, shotReady);
+      } else {
+        shotReady();
+      }
+    });
+
+    shotImage.addEventListener("error", function () {
+      if (!shotViewer.open) return;
+      shotStatus.textContent = "could not load the full size image.";
+      shotStatus.hidden = false;
+    });
+
+    // Anything that is not the image itself or a control closes the view.
+    shotViewer.addEventListener("click", function (event) {
+      if (!event.target.closest) return;
+      if (event.target === shotImage || event.target === shotSubtitle) return;
+      if (event.target.closest("button, a")) return;
+      closeShot();
+    });
+
+    shotViewer.addEventListener("close", function () {
+      shotImage.removeAttribute("src");
+      shotStatus.hidden = true;
+      shotSubtitle.hidden = true;
+      document.documentElement.classList.remove("shot-locked");
+    });
+  }
+
+  if (shotClose) shotClose.addEventListener("click", closeShot);
+
+  document.addEventListener("click", function (event) {
+    var trigger = event.target.closest ? event.target.closest("[data-shot]") : null;
+    if (!trigger) return;
+    event.preventDefault();
+    openShot(trigger);
+  });
 
   var list = document.getElementById("project-list");
   if (!list) return;

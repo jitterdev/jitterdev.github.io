@@ -19,14 +19,13 @@ print(#t)
 x = (x or 0) + 1
 print("run number", x)</textarea>
           <div class="repl-bar">
-            <button id="repl-run" class="btn btn-primary btn-small" disabled>run</button>
+            <button id="repl-run" class="btn btn-primary btn-small" aria-keyshortcuts="Control+Enter Meta+Enter" data-tip="run (ctrl/cmd + enter)" disabled>run</button>
             <button id="repl-clear" class="btn btn-ghost btn-small">clear</button>
             <span id="repl-status" class="repl-status">loading luau...</span>
-            <span class="repl-hint">ctrl/cmd + enter</span>
           </div>
           <pre id="repl-output" class="repl-output"></pre>
         </div>
-        <p class="repl-credit">runtime: <a href="https://github.com/xNasuni/luau-web">luau-web</a> <span class="sep" aria-hidden="true">/</span> language: <a href="https://luau.org/">luau</a> (mit)</p>
+        <p class="repl-credit">runtime: <a href="https://github.com/xNasuni/luau-web">luau-web</a>, language: <a href="https://luau.org/">luau</a> (mit)</p>
         <hr />
         <p class="end">
           <i class="the-end"></i>
@@ -71,12 +70,6 @@ print("run number", x)</textarea>
       .repl-status {
         color: var(--subtext-color);
         font-size: 0.85em;
-      }
-
-      .repl-hint {
-        margin-left: auto;
-        color: var(--blockquote-color);
-        font-size: 0.8em;
       }
 
       .repl-output {

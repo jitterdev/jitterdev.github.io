@@ -1142,6 +1142,170 @@
       border-radius: 5px;
     }
 
+    /* Click-to-enlarge images. The thumbnail stays the small file until
+       someone opens it; only then is the full resolution one requested. */
+    .shot-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: calc(var(--global-space) * 1.5);
+      margin: calc(var(--global-space) * 2) 0;
+    }
+
+    .shot-grid .shot {
+      margin: 0;
+    }
+
+    @media screen and (max-width: 900px) {
+      .shot-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media screen and (max-width: 560px) {
+      .shot-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .shot {
+      margin: calc(var(--global-space) * 2) 0;
+    }
+
+    .shot-open {
+      display: block;
+      width: 100%;
+      padding: 0;
+      border: 0;
+      background: none;
+      color: inherit;
+      font: inherit;
+      line-height: 1;
+      text-align: inherit;
+      cursor: zoom-in;
+      border-radius: 5px;
+    }
+
+    .shot-open img {
+      display: block;
+      width: 100%;
+      height: auto;
+      margin: 0;
+      border: 1px solid var(--table-color);
+      border-radius: 5px;
+    }
+
+    .shot-open:hover img,
+    .shot-open:focus-visible img {
+      border-color: var(--primary-color);
+    }
+
+    .shot-open:focus-visible {
+      outline: 2px solid var(--primary-color);
+      outline-offset: 2px;
+    }
+
+    .shot-viewer {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      max-width: none;
+      height: 100%;
+      max-height: none;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: var(--font-color);
+      overflow: auto;
+      overscroll-behavior: contain;
+    }
+
+    .shot-viewer::backdrop {
+      background: rgba(17, 17, 27, 0.94);
+    }
+
+    .shot-viewer-figure {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: var(--global-space);
+      min-height: 100%;
+      margin: 0;
+      padding: calc(var(--global-space) * 3) var(--global-space);
+    }
+
+    .shot-viewer-figure img {
+      display: block;
+      width: auto;
+      max-width: 100%;
+      max-height: calc(100vh - 8rem);
+      max-height: calc(100dvh - 8rem);
+      height: auto;
+      border: 1px solid var(--table-color);
+      border-radius: 5px;
+      background: var(--code-bg-color);
+      transition: border-color 0.15s ease;
+    }
+
+    .shot-viewer-figure img:hover {
+      border-color: var(--primary-color);
+    }
+
+    .shot-subtitle {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 2;
+      margin: 0;
+      padding: calc(var(--global-space) * 1.5) var(--global-space);
+      padding-bottom: calc(var(--global-space) * 1.5 + env(safe-area-inset-bottom, 0px));
+      background: rgba(17, 17, 27, 0.94);
+      color: var(--font-color);
+      font-size: 0.9em;
+      line-height: 1.4;
+      text-align: center;
+    }
+
+    .shot-status {
+      margin: 0;
+      color: var(--subtext-color);
+      font-size: 0.85em;
+    }
+
+    .shot-close {
+      position: fixed;
+      top: calc(var(--global-space) * 2);
+      right: calc(var(--global-space) * 2);
+      width: 44px;
+      height: 44px;
+      padding: 0;
+      border: 1px solid var(--table-color);
+      border-radius: 5px;
+      background: var(--background-color);
+      color: var(--font-color);
+      font: inherit;
+      font-size: 1.3em;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .shot-close:hover,
+    .shot-close:focus-visible {
+      border-color: var(--primary-color);
+      color: var(--primary-color);
+    }
+
+    .shot-close:focus-visible {
+      outline: 2px solid var(--primary-color);
+      outline-offset: 2px;
+    }
+
+    html.shot-locked {
+      overflow: hidden;
+    }
+
     .intro {
       display: flex;
       align-items: flex-start;
@@ -1229,25 +1393,6 @@
       font-size: 0.75em;
       line-height: 1.4;
       user-select: none;
-    }
-
-    .sep {
-      position: relative;
-      display: inline-block;
-      margin: 0 0.2em;
-      vertical-align: middle;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .sep::before {
-      content: "";
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 0.3em;
-      height: 0.3em;
-      background: currentColor;
-      transform: translate(-50%, -50%) rotate(45deg);
     }
 
     @media screen and (max-width: 600px) {

@@ -740,7 +740,7 @@ function writeNode(blob, n) {
 }
 
 // Pulls one LOD's face range out and renumbers so the FBX has no orphan vertices.
-function buildGeometry(mesh, lod) {
+export function buildGeometry(mesh, lod) {
   const totalFaces = mesh.faces.length / 3;
   let begin = 0;
   let end = totalFaces;
@@ -755,6 +755,8 @@ function buildGeometry(mesh, lod) {
   const positions = [];
   const normals = [];
   const uvs = [];
+  const colors = mesh.colors ? [] : null;
+  const tangents = mesh.tangents ? [] : null;
   const indices = [];
 
   for (let f = begin; f < end; f++) {
@@ -767,12 +769,28 @@ function buildGeometry(mesh, lod) {
         positions.push(mesh.positions[src * 3], mesh.positions[src * 3 + 1], mesh.positions[src * 3 + 2]);
         normals.push(mesh.normals[src * 3], mesh.normals[src * 3 + 1], mesh.normals[src * 3 + 2]);
         uvs.push(mesh.uvs[src * 2], mesh.uvs[src * 2 + 1]);
+        if (colors) {
+          colors.push(
+            mesh.colors[src * 4],
+            mesh.colors[src * 4 + 1],
+            mesh.colors[src * 4 + 2],
+            mesh.colors[src * 4 + 3]
+          );
+        }
+        if (tangents) {
+          tangents.push(
+            mesh.tangents[src * 4],
+            mesh.tangents[src * 4 + 1],
+            mesh.tangents[src * 4 + 2],
+            mesh.tangents[src * 4 + 3]
+          );
+        }
       }
       indices.push(dst);
     }
   }
 
-  return { positions, normals, uvs, indices, faceCount: end - begin };
+  return { positions, normals, uvs, colors, tangents, indices, faceCount: end - begin };
 }
 
 // The parser splits the name property on \x00\x01 and expects the class after
@@ -831,30 +849,30 @@ export function meshToFBX(mesh, options = {}) {
 
   const layerRefs = ['LayerElementNormal', 'LayerElementUV'];
 
-  if (withTangents && mesh.tangents) {
+  if (withTangents && geo.tangents) {
     const tangents = [];
     for (let i = 0; i < geo.indices.length; i++) {
       const src = geo.indices[i];
       tangents.push(
-        mesh.tangents[src * 4],
-        mesh.tangents[src * 4 + 1],
-        mesh.tangents[src * 4 + 2],
-        mesh.tangents[src * 4 + 3]
+        geo.tangents[src * 4],
+        geo.tangents[src * 4 + 1],
+        geo.tangents[src * 4 + 2],
+        geo.tangents[src * 4 + 3]
       );
     }
     geometryChildren.push(layerElement('LayerElementTangent', 'Tangents', tangents));
     layerRefs.push('LayerElementTangent');
   }
 
-  if (withColor && mesh.colors) {
+  if (withColor && geo.colors) {
     const colors = [];
     for (let i = 0; i < geo.indices.length; i++) {
       const src = geo.indices[i];
       colors.push(
-        mesh.colors[src * 4] / 255,
-        mesh.colors[src * 4 + 1] / 255,
-        mesh.colors[src * 4 + 2] / 255,
-        mesh.colors[src * 4 + 3] / 255
+        geo.colors[src * 4] / 255,
+        geo.colors[src * 4 + 1] / 255,
+        geo.colors[src * 4 + 2] / 255,
+        geo.colors[src * 4 + 3] / 255
       );
     }
     geometryChildren.push(layerElement('LayerElementColor', 'Colors', colors));
@@ -894,7 +912,7 @@ export function meshToFBX(mesh, options = {}) {
         node('P', [P.s('UpAxis'), P.s('int'), P.s('Integer'), P.s(''), P.i(1)]),
         node('P', [P.s('UpAxisSign'), P.s('int'), P.s('Integer'), P.s(''), P.i(1)]),
         node('P', [P.s('FrontAxis'), P.s('int'), P.s('Integer'), P.s(''), P.i(2)]),
-        node('P', [P.s('FrontAxisSign'), P.s('int'), P.s('Integer'), P.s(''), P.i(1)]),
+        node('P', [P.s('FrontAxisSign'), P.s('int'), P.s('Integer'), P.s(''), P.i(-1)]),
         node('P', [P.s('CoordAxis'), P.s('int'), P.s('Integer'), P.s(''), P.i(0)]),
         node('P', [P.s('CoordAxisSign'), P.s('int'), P.s('Integer'), P.s(''), P.i(1)]),
         node('P', [P.s('UnitScaleFactor'), P.s('double'), P.s('Number'), P.s(''), P.d(100)]),
